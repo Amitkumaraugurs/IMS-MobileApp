@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:management/network/api_service.dart';
 import 'package:management/network/model/goods_model.dart';
+import 'package:management/network/model/store.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 
 class IssuetoStore extends StatefulWidget{
   @override
@@ -12,12 +17,70 @@ class IssuetoStore extends StatefulWidget{
 
 class IssuetoStoreState extends State<IssuetoStore>{
 
- // List<Vendor> vendorList = <Vendor>[];
- // Vendor selectedVenderId;
+  ProgressDialog pr;
+  List<Store> vendorList = <Store>[];
+  Store selectedVenderId;
+  String storeid,docketnumber,transport,article,barcode,qyt;
+
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
+  TextEditingController doketController = new TextEditingController();
+  TextEditingController transpostController = new TextEditingController();
+  TextEditingController articleController = new TextEditingController();
+  TextEditingController barcodeController = new TextEditingController();
+  TextEditingController qytController = new TextEditingController();
 
+  Future<List> loadStore() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getStoreList(7).then((result) {
+      if(result.storedata.isNotEmpty ){
+        this.vendorList = result.storedata;
+        setState(() {
+          selectedVenderId = result.storedata[0];
+          storeid = result.storedata[0].storeId.toString();
+        });
+      }
+//      this.vendorList = data.vendordata;
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
+  void showLongToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: Colors.red,
+        textColor: Colors.white);
+  }
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Success"),
+          content: new Text("Inventory issue Successfully"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Done"),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  @override
+  void initState() {
+    super.initState();
+    this.loadStore();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -28,8 +91,59 @@ class IssuetoStoreState extends State<IssuetoStore>{
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+        onPressed: () async{
 
-        child: Text("ADD",
+          var username=storeid;
+          print(storeid);
+          var docketnumber=doketController.text;
+          var transpost=transpostController.text;
+          var articel=articleController.text;
+          var barcode=barcodeController.text;
+          var quty=qytController.text;
+
+          if(docketnumber.isEmpty){
+            showLongToast("Enter Docket No.");
+          }else if(transpost.isEmpty){
+            showLongToast("Enter Transport");
+          }else if(articel.isEmpty){
+            showLongToast("Enter articel");
+          }else if(barcode.isEmpty){
+            showLongToast("Enter BarCode");
+          }else if(quty.isEmpty){
+            showLongToast("Enter Quantity");
+          }else{
+            pr = new ProgressDialog(context,type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+
+            pr.style(
+                message: 'Please wait',
+                borderRadius: 10.0,
+                backgroundColor: Colors.white,
+                progressWidget: CircularProgressIndicator(),
+                elevation: 10.0,
+                insetAnimCurve: Curves.easeInOut,
+                progress: 0.0,
+                maxProgress: 100.0,
+                messageTextStyle: TextStyle(
+                    color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.w600)
+            );
+            pr.show();
+            final api = Provider.of<ApiService>(context, listen: false);
+            api.SaveDistribution(0,storeid,0,qytController.text,0,0,0,0,barcodeController.text,"","",0,transpostController.text,doketController.text,"",19).then((it) {
+              //Map<String, dynamic> user = jsonDecode(it);
+              print(it);
+              pr.hide();
+              if(it=="true"){
+                _showDialog();
+              }
+              
+
+            }).catchError((onError){
+              print(onError.toString());
+              pr.hide();
+            });
+          }
+        },
+        child: Text("Submit",
             textAlign: TextAlign.center,
             style: style.copyWith(
                 color: Colors.white, fontWeight: FontWeight.bold)),
@@ -58,21 +172,21 @@ class IssuetoStoreState extends State<IssuetoStore>{
               labelText: 'Store',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
           ),
-         // value: selectedVenderId,
-//                          onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
+          value: selectedVenderId,
+          // onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
           isDense: true,
-          /*items: this.vendorList.map((Vendor data) {
-            return DropdownMenuItem<Vendor>(
-              child:  Text(data.VendorName),
+          items: this.vendorList.map((Store data) {
+            return DropdownMenuItem<Store>(
+              child:  Text(data.storeName),
               value: data,
             );
           }).toList(),
-          onChanged: (Vendor value) {
+          onChanged: (Store value) {
             setState(() {
               //goodsForm.VendorId = value.VendorId.toString();
-             // selectedVenderId = value;
+              storeid = value.storeId.toString();
             });
-          },*/
+          },
           /*validator: (Vendor value) {
             if (selectedVenderId.VendorId == null) {
               return "Please select vendor";
@@ -86,6 +200,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
 
         new TextFormField(
+          controller: doketController,
           decoration: InputDecoration(
               contentPadding:
               EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -95,7 +210,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
               hintText: "Enter Docket No.",
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0))),
-         // onSaved: (val) => goodsForm.ItemDesc = val,
+        //  onSaved: (val) => docketnumber = val,
           validator: (dynamic value) {
             if (value.isEmpty) {
               return "Please enter item description";
@@ -111,6 +226,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
 
       new TextFormField(
+        controller: transpostController,
         decoration: InputDecoration(
             contentPadding:
             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -120,7 +236,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
             hintText: "Transport",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0))),
-        // onSaved: (val) => goodsForm.ItemDesc = val,
+        // onSaved: (val) => transport = val,
         validator: (dynamic value) {
           if (value.isEmpty) {
             return "Please enter item description";
@@ -136,6 +252,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
 
       new TextFormField(
+        controller: articleController,
         decoration: InputDecoration(
             contentPadding:
             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -145,7 +262,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
             hintText: "Enter Article",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0))),
-        // onSaved: (val) => goodsForm.ItemDesc = val,
+        // onSaved: (val) => article = val,
         validator: (dynamic value) {
           if (value.isEmpty) {
             return "Please enter item description";
@@ -161,6 +278,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
 
       new TextFormField(
+        controller: barcodeController,
         decoration: InputDecoration(
             contentPadding:
             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -170,7 +288,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
             hintText: "Enter Barcode",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0))),
-        // onSaved: (val) => goodsForm.ItemDesc = val,
+        // onSaved: (val) => barcode = val,
         validator: (dynamic value) {
           if (value.isEmpty) {
             return "Please enter item description";
@@ -186,6 +304,8 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
 
       new TextFormField(
+        controller: qytController,
+        keyboardType: TextInputType.number,
         decoration: InputDecoration(
             contentPadding:
             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -195,7 +315,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
             hintText: "Enter Issue Qty",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0))),
-        // onSaved: (val) => goodsForm.ItemDesc = val,
+         //onSaved: (val) => qyt = val,
         validator: (dynamic value) {
           if (value.isEmpty) {
             return "Please enter item description";

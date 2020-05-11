@@ -414,4 +414,90 @@ class _ApiService implements ApiService {
     final value = Purchaselist.fromJson(_result.data);
     return Future.value(value);
   }
+
+  @override
+  getStoreList(Action) async {
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'Action': Action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/InventoryIssueToStore/GetStore',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Storelist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  SaveDistribution(
+      ID,
+      StoreId,
+      PurchaseId,
+      IssueQty,
+      SoldQty,
+      DamageQty,
+      ReturnQty,
+      Discount,
+      Barcode,
+      From,
+      To,
+      MasterQty,
+      Transport,
+      Docket,
+      StockLife,
+      Action) async {
+    ArgumentError.checkNotNull(ID, 'ID');
+    ArgumentError.checkNotNull(StoreId, 'StoreId');
+    ArgumentError.checkNotNull(PurchaseId, 'PurchaseId');
+    ArgumentError.checkNotNull(IssueQty, 'IssueQty');
+    ArgumentError.checkNotNull(SoldQty, 'SoldQty');
+    ArgumentError.checkNotNull(DamageQty, 'DamageQty');
+    ArgumentError.checkNotNull(ReturnQty, 'ReturnQty');
+    ArgumentError.checkNotNull(Discount, 'Discount');
+    ArgumentError.checkNotNull(Barcode, 'Barcode');
+    ArgumentError.checkNotNull(From, 'From');
+    ArgumentError.checkNotNull(To, 'To');
+    ArgumentError.checkNotNull(MasterQty, 'MasterQty');
+    ArgumentError.checkNotNull(Transport, 'Transport');
+    ArgumentError.checkNotNull(Docket, 'Docket');
+    ArgumentError.checkNotNull(StockLife, 'StockLife');
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'ID': ID,
+      'StoreId': StoreId,
+      'PurchaseId': PurchaseId,
+      'IssueQty': IssueQty,
+      'SoldQty': SoldQty,
+      'DamageQty': DamageQty,
+      'ReturnQty': ReturnQty,
+      'Discount': Discount,
+      'Barcode': Barcode,
+      'From': From,
+      'To': To,
+      'MasterQty': MasterQty,
+      'Transport': Transport,
+      'Docket': Docket,
+      'StockLife': StockLife,
+      'Action': Action
+    };
+    final Response<String> _result = await _dio.request(
+        '/InventoryIssueToStore/SaveDistribution',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
 }

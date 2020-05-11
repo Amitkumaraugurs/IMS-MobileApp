@@ -46,7 +46,7 @@ class DashboardState extends State<Dashboard>{
                  crossAxisAlignment: CrossAxisAlignment.start,
                  children: <Widget>[
                    Container(
-                     padding: EdgeInsets.all(15.0),
+                     padding: EdgeInsets.all(16.0),
                      width: 120.0,
                      color: Colors.cyan,
                      child: Column(
@@ -63,7 +63,7 @@ class DashboardState extends State<Dashboard>{
                              )
                          ),
                          SizedBox(
-                           height: 5.0,
+                           height: 10.0,
                          ),
                          Text("Stock Entry",style: style
                          )
@@ -75,7 +75,7 @@ class DashboardState extends State<Dashboard>{
 
                    ),
                    Container(
-                     padding: EdgeInsets.all(15.0),
+                     padding: EdgeInsets.all(16.0),
                      width: 120.0,
                      color: Colors.red,
                      child: Column(
@@ -104,7 +104,7 @@ class DashboardState extends State<Dashboard>{
 
                    ),
                    Container(
-                     padding: EdgeInsets.all(15.0),
+                     padding: EdgeInsets.all(16.0),
                      width: 120.0,
                      color: Colors.orange,
                      child: Column(
@@ -116,7 +116,7 @@ class DashboardState extends State<Dashboard>{
                                print("onTap Goods.");
                                },
                              child: Image(
-                               height: 55,
+                               height: 50,
                                fit:BoxFit.fill,
                                image: AssetImage("assets/bill.png"),
                              )
@@ -124,7 +124,7 @@ class DashboardState extends State<Dashboard>{
                          SizedBox(
                            height: 10.0,
                          ),
-                         Text("Transfer Inventory Confirmation",style: style,textAlign: TextAlign.center
+                         Text("Inventory Confirmation",style: style,textAlign: TextAlign.center
                          )
                        ],
                      ),

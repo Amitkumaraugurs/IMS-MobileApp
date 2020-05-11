@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:management/network/api_service.dart';
 import 'package:management/network/model/goods_model.dart';
+import 'package:management/network/model/store.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 
 class InventoryRequest extends StatefulWidget{
   @override
@@ -12,12 +16,36 @@ class InventoryRequest extends StatefulWidget{
 
 class InventoryRequestState extends State<InventoryRequest>{
 
- // List<Vendor> vendorList = <Vendor>[];
- // Vendor selectedVenderId;
+  ProgressDialog pr;
+  List<Store> vendorList = <Store>[];
+  Store selectedVenderId;
+  String storeid;
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
 
+  Future<List> loadStore() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getStoreList(7).then((result) {
+      if(result.storedata.isNotEmpty ){
+        this.vendorList = result.storedata;
+        setState(() {
+          selectedVenderId = result.storedata[0];
+          storeid = result.storedata[0].storeId.toString();
+        });
+      }
+//      this.vendorList = data.vendordata;
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
+
+
+  @override
+  void initState() {
+    super.initState();
+    this.loadStore();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -58,28 +86,21 @@ class InventoryRequestState extends State<InventoryRequest>{
               labelText: 'Store',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
           ),
-         // value: selectedVenderId,
-//                          onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
+          value: selectedVenderId,
+          // onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
           isDense: true,
-          /*items: this.vendorList.map((Vendor data) {
-            return DropdownMenuItem<Vendor>(
-              child:  Text(data.VendorName),
+          items: this.vendorList.map((Store data) {
+            return DropdownMenuItem<Store>(
+              child:  Text(data.storeName),
               value: data,
             );
           }).toList(),
-          onChanged: (Vendor value) {
+          onChanged: (Store value) {
             setState(() {
               //goodsForm.VendorId = value.VendorId.toString();
-             // selectedVenderId = value;
+              storeid = value.storeId.toString();
             });
-          },*/
-          /*validator: (Vendor value) {
-            if (selectedVenderId.VendorId == null) {
-              return "Please select vendor";
-            }else {
-              return null;
-            }
-          },*/
+          },
         ),
       SizedBox(
         height: 15.0,

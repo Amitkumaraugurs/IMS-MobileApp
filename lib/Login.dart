@@ -94,8 +94,8 @@ class LoginState extends State<Login>{
         onPressed: () async{
           print("onTap Dashboard.");
 
-          Route route = MaterialPageRoute(builder: (context) => Dashboard());
-          Navigator.pushReplacement(context, route);
+         // Route route = MaterialPageRoute(builder: (context) => Dashboard());
+         // Navigator.pushReplacement(context, route);
 
 
           var username=emailController.text.trim();
@@ -125,9 +125,9 @@ class LoginState extends State<Login>{
             final api = Provider.of<ApiService>(context, listen: false);
             api.getloginTask(username,password,0).then((it) {
            // Map<String, dynamic> user = jsonDecode(it);
-            var userMap = json.decode(it);
-            Userlist userList = Userlist.fromJson(userMap);
-              var i= userList.userdata[0].Status;
+           // var userMap = json.decode(it);
+           // Userlist userList = Userlist.fromJson(userMap);
+             // var i= userList.userdata[0].Status;
               loginRes(it.toString());
             }).catchError((onError){
               print(onError.toString());
@@ -135,9 +135,6 @@ class LoginState extends State<Login>{
             });
           }
 
-          /*it.forEach((f) {
-            print(f.title);
-          });*/
 
         },
         child: Text("Login",

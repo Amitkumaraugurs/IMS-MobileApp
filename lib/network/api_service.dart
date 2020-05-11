@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'model/goods_model.dart';
+import 'model/store.dart';
 import 'model/task_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
@@ -32,7 +33,7 @@ abstract class ApiService {
 //    @Field("action") action,
 //  );
 
-  @POST("/login/GetLogin")
+  @POST("/login/Login")
   Future<String> getloginTask(@Field("UserName") username,
       @Field("Password") Password,
       @Field("action") action,);
@@ -139,6 +140,30 @@ abstract class ApiService {
       @Field("Artical") Artical,
       @Field("Action") Action);
 
+
+
+
+  @POST("/InventoryIssueToStore/GetStore")
+  Future<Storelist> getStoreList(@Field("Action") Action);
+
+  @POST("/InventoryIssueToStore/SaveDistribution")
+  Future<String> SaveDistribution(
+      @Field("ID") ID,
+      @Field("StoreId") StoreId,
+      @Field("PurchaseId") PurchaseId,
+      @Field("IssueQty") IssueQty,
+      @Field("SoldQty") SoldQty,
+      @Field("DamageQty") DamageQty,
+      @Field("ReturnQty") ReturnQty,
+      @Field("Discount") Discount ,
+      @Field("Barcode") Barcode,
+      @Field("From") From,
+      @Field("To") To,
+      @Field("MasterQty") MasterQty,
+      @Field("Transport") Transport,
+      @Field("Docket") Docket,
+      @Field("StockLife") StockLife,
+      @Field("Action") Action);
 }
 
 
