@@ -300,6 +300,7 @@ class AddGoodsStates extends State<AddGoods> {
     });
   }
 
+
   //end for date
 
   DateTime convertToDate(String input) {
