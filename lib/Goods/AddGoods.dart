@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -16,10 +17,10 @@ class AddGoods extends StatefulWidget {
 }
 
 class GoodsFormObject {
-  String VendorId ;
-  String CatId ;
-  String GroupId ;
-  String SubGruopId ;
+  String VendorId;
+  String CatId;
+  String GroupId;
+  String SubGruopId;
   String Barcode = "";
 //  String Concept;
   String ItemDesc;
@@ -47,7 +48,8 @@ class GoodsFormObject {
   String Artical = "";
   String Action = "";
 
-  GoodsFormObject({this.VendorId,
+  GoodsFormObject(
+      {this.VendorId,
       this.CatId,
       this.GroupId,
       this.SubGruopId,
@@ -70,15 +72,12 @@ class GoodsFormObject {
       this.Action});
 
 //  final Function validator;
-
 }
 
 class AddGoodsStates extends State<AddGoods> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  
 
 //  FocusNode myFocusNode;
-
 //  Goodsform goodsForm = new Goodsform();
 
   GoodsFormObject goodsForm = new GoodsFormObject();
@@ -95,19 +94,42 @@ class AddGoodsStates extends State<AddGoods> {
   List<SubCategory> subcatList = <SubCategory>[];
   SubCategory selectedSubCat;
 
+  List<Season> seasonList = <Season>[];
+  Season selectedSeasonId;
+
   bool isBarcode = false;
+
+  Future<List> loadSeason() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getSeasonList(0, "", 6).then((result) {
+      print(result.seasonData);
+      if (result.seasonData.isNotEmpty) {
+        this.seasonList = result.seasonData;
+        print(this.seasonList);
+        setState(() {
+          selectedSeasonId = result.seasonData[0];
+          goodsForm.Season = result.seasonData[0].Id.toString();
+        });
+      }
+//      this.vendorList = data.vendordata;
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
   Future<List> loadVendor() async {
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getVendorList(0, 0, "", "", "", "", 0, 0, "", "", 7).then((result) {
-      if(result.vendordata.isNotEmpty ){
+    await api
+        .getVendorList(0, 0, "", "", "", "", 0, 0, "", "", 7)
+        .then((result) {
+      if (result.vendordata.isNotEmpty) {
         this.vendorList = result.vendordata;
         setState(() {
           selectedVenderId = result.vendordata[0];
           goodsForm.VendorId = result.vendordata[0].VendorId.toString();
         });
       }
-//      this.vendorList = data.vendordata;
+      //      this.vendorList = data.vendordata;
     }).catchError((error) {
       print(error);
     });
@@ -118,7 +140,7 @@ class AddGoodsStates extends State<AddGoods> {
     await api.getGroupList(0, "", 0, 4).then((result) {
       print(result.groupData.isNotEmpty);
       selectedGroupId = result.groupData[0];
-      if(result.groupData.isNotEmpty ){
+      if (result.groupData.isNotEmpty) {
         setState(() {
           selectedGroupId = result.groupData[0];
           goodsForm.GroupId = result.groupData[0].GroupId.toString();
@@ -135,7 +157,7 @@ class AddGoodsStates extends State<AddGoods> {
 //    this.categoryList = [];
     final api = Provider.of<ApiService>(context, listen: false);
     await api.getCategoryList(0, "", selectedGroupId.GroupId, 4).then((result) {
-      if(result.catData.isNotEmpty){
+      if (result.catData.isNotEmpty) {
 //        selectedCatId = result.catData[0];
         setState(() {
           selectedCatId = result.catData[0];
@@ -153,8 +175,10 @@ class AddGoodsStates extends State<AddGoods> {
     print(selectedCatId);
     this.subcatList = [];
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getSubCategoryList(0, "", 0, selectedCatId.CatId, 0, 0, 7, "").then((result) {
-      if(result.subcatData.isNotEmpty){
+    await api
+        .getSubCategoryList(0, "", 0, selectedCatId.CatId, 0, 0, 7, "")
+        .then((result) {
+      if (result.subcatData.isNotEmpty) {
         selectedSubCat = result.subcatData[0];
         setState(() {
           selectedSubCat = result.subcatData[0];
@@ -168,108 +192,133 @@ class AddGoodsStates extends State<AddGoods> {
   }
 
   Future<String> onSubmit() {
-
     try {
       _formKey.currentState.save();
       _formKey.currentState.validate();
 
-      print("submit");
-//    print(goodsForm);
-//    print(goodsForm.VendorId);
-//    print(goodsForm.CatId);
-//    print(goodsForm.GroupId);
-//    print(goodsForm.SubGruopId);
-//    print(goodsForm.Barcode);
-//    print(goodsForm.Color);
-//    print(goodsForm.Size);
-//    print(goodsForm.RetailPrice);
-//    print(goodsForm.Quantity);
-//
-//    print(goodsForm.DateStock);
-//    print(goodsForm.Season);
-//    print(goodsForm.Margin);
-//    print(goodsForm.VAT);
-//    print(goodsForm.SAT);
-//
-//    print(goodsForm.Offer);
-//    print(goodsForm.BrandStyleCode);
-//    print(goodsForm.Transport);
-//    print(goodsForm.DocketNo);
-//    print(goodsForm.Artical);
+  //     print("submit");
+  //  print(goodsForm);
+  //  print(goodsForm.VendorId);
+  //  print(goodsForm.CatId);
+  //  print(goodsForm.GroupId);
+  //  print(goodsForm.SubGruopId);
+  //  print(goodsForm.Barcode);
+  //  print(goodsForm.Color);
+  //  print(goodsForm.Size);
+  //  print(goodsForm.RetailPrice);
+  //  print(goodsForm.Quantity);
+
+  //  print(goodsForm.DateStock);
+  //  print(goodsForm.Season);
+  //  print(goodsForm.Margin);
+  //  print(goodsForm.VAT);
+  //  print(goodsForm.SAT);
+
+  //  print(goodsForm.Offer);
+  //  print(goodsForm.BrandStyleCode);
+  //  print(goodsForm.Transport);
+  //  print(goodsForm.DocketNo);
+  //  print(goodsForm.Artical);
 //
 //    print(_formKey.currentState.validate());
 //
       if (_formKey.currentState.validate() == true) {
         print('here');
-        var costPerPrice = goodsForm.CostPerPrice.isNotEmpty ?  double.parse(goodsForm.CostPerPrice).toStringAsFixed(2) : "";
-        var retailPrice = goodsForm.RetailPrice.isNotEmpty ?  double.parse(goodsForm.RetailPrice).toStringAsFixed(2) : "";
-        var quantity = goodsForm.Quantity.isNotEmpty ?  double.parse(goodsForm.Quantity).toStringAsFixed(2) : "";
-        var margin = goodsForm.Margin.isNotEmpty ?  double.parse(goodsForm.Margin).toStringAsFixed(2) : "";
-        var vat = goodsForm.VAT.isNotEmpty ?  double.parse(goodsForm.VAT).toStringAsFixed(2) : "";
-        var sat = goodsForm.SAT.isNotEmpty ?  double.parse(goodsForm.SAT).toStringAsFixed(2) : "";
+        var costPerPrice = goodsForm.CostPerPrice.isNotEmpty
+            ? double.parse(goodsForm.CostPerPrice).toStringAsFixed(2)
+            : "";
+        var retailPrice = goodsForm.RetailPrice.isNotEmpty
+            ? double.parse(goodsForm.RetailPrice).toStringAsFixed(2)
+            : "";
+        var quantity = goodsForm.Quantity.isNotEmpty
+            ? double.parse(goodsForm.Quantity).toStringAsFixed(2)
+            : "";
+        var margin = goodsForm.Margin.isNotEmpty
+            ? double.parse(goodsForm.Margin).toStringAsFixed(2)
+            : "";
+        var vat = goodsForm.VAT.isNotEmpty
+            ? double.parse(goodsForm.VAT).toStringAsFixed(2)
+            : "";
+        var sat = goodsForm.SAT.isNotEmpty
+            ? double.parse(goodsForm.SAT).toStringAsFixed(2)
+            : "";
 
         final api = Provider.of<ApiService>(context, listen: false);
-        api.submitGoodsFormData(
-            0,
-            int.parse(goodsForm.VendorId),
-            int.parse(goodsForm.CatId),
-            int.parse(goodsForm.GroupId),
-            int.parse(goodsForm.SubGruopId),
-            goodsForm.Barcode,
-            "0",
-            "",
-            "",
-            goodsForm.Color,
-            goodsForm.Size,
-            costPerPrice,
-            retailPrice,
-            quantity,
-            0,
-            0,
-            goodsForm.DateStock,
-            goodsForm.Season,
-            margin,
-            vat,
-            sat,
-            goodsForm.Offer,
-            goodsForm.BrandStyleCode,
-            0,
-            goodsForm.Transport,
-            goodsForm.DocketNo,
-            0,
-            "",
-            "",
-            goodsForm.Artical, 0).then((result) {
-          print(result);
+        api
+            .submitGoodsFormData(
+                0,
+                int.parse(goodsForm.VendorId),
+                int.parse(goodsForm.CatId),
+                int.parse(goodsForm.GroupId),
+                int.parse(goodsForm.SubGruopId),
+                goodsForm.Barcode,
+                "0",
+                "",
+                "",
+                goodsForm.Color,
+                goodsForm.Size,
+                costPerPrice,
+                retailPrice,
+                quantity,
+                0,
+                0,
+                goodsForm.DateStock,
+                goodsForm.Season,
+                margin,
+                vat,
+                sat,
+                goodsForm.Offer,
+                goodsForm.BrandStyleCode,
+                0,
+                goodsForm.Transport,
+                goodsForm.DocketNo,
+                0,
+                "",
+                "",
+                goodsForm.Artical,
+                0)
+            .then((result) {
+          var res = jsonDecode(result);
+          if (res[0]['Status'] == true && res[0]['Message'] == "Success") {
+            this.loadVendor();
+            this.loadGroup();
+            _formKey.currentState.reset();
 
-//          print(result.Message);
-//          if (result.Status == true && result.Message == "Success") {
-//            print("dddd");
-//            _formKey.currentState.reset();
-//            Fluttertoast.showToast(
-//                msg: "Data saved successfully.",
-//                toastLength: Toast.LENGTH_SHORT,
-//                gravity: ToastGravity.CENTER,
-//                timeInSecForIosWeb: 1,
-//                backgroundColor: Colors.green,
-//                textColor: Colors.white,
-//                fontSize: 16.0
-//            );
-////          } else {
-//          }
+            // showToast('Data Saved Successfully.');
+
+            // Fluttertoast.showToast(msg: "Data Saved Successfully.");
+
+            // Fluttertoast.showToast(
+            //     msg: "Data Saved Successfully.",
+            //     toastLength: Toast.LENGTH_LONG,
+            //     backgroundColor: Colors.green,
+            //     textColor: Colors.white);
+
+            //  Fluttertoast.showToast(
+            //      msg: "Data saved successfully.",
+            //      toastLength: Toast.LENGTH_SHORT,
+            //      gravity: ToastGravity.CENTER,
+            //     //  timeInSecForIosWeb: 1,
+            //      backgroundColor: Colors.green,
+            //textColor: Colors.white,
+            //      fontSize: 16.0
+            //  );
+            // } else {
+            //   showToast('Some error occured.');
+          }
         });
       }
-    }catch(error){
+    } catch (error) {
       print(error);
-      Fluttertoast.showToast(
-          msg: error,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
+      // Fluttertoast.showToast(
+      //     msg: error,
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.CENTER,
+      //     timeInSecForIosWeb: 1,
+      //     backgroundColor: Colors.red,
+      //     textColor: Colors.white,
+      //     fontSize: 16.0
+      // );
     }
   }
 
@@ -291,7 +340,6 @@ class AddGoodsStates extends State<AddGoods> {
     var result = await showDatePicker(
         context: context,
         initialDate: initialDate,
-
         firstDate: new DateTime(currentYear - 1),
         lastDate: new DateTime(currentYear + 20));
     if (result == null) return;
@@ -299,7 +347,6 @@ class AddGoodsStates extends State<AddGoods> {
       _controller.text = new DateFormat.yMd().format(result);
     });
   }
-
 
   //end for date
 
@@ -317,6 +364,7 @@ class AddGoodsStates extends State<AddGoods> {
     super.initState();
     this.loadVendor();
     this.loadGroup();
+    this.loadSeason();
 //    myFocusNode = FocusNode();
   }
 
@@ -337,7 +385,7 @@ class AddGoodsStates extends State<AddGoods> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Item"),
+        title: Text("Add Purchase Order"),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -345,12 +393,12 @@ class AddGoodsStates extends State<AddGoods> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                Container(
+                /*Container(
                   height: 20.0,
                   width: double.infinity,
                   color: Colors.teal,
-                  child: Center(child: Text("Store", style: style)),
-                ),
+                  child: Center(child: Text("Form", style: style)),
+                ),*/
                 Container(
                   margin: const EdgeInsets.all(10.0),
                   child: Row(
@@ -375,7 +423,7 @@ class AddGoodsStates extends State<AddGoods> {
                           validator: (value) {
                             if (value.isEmpty) {
                               return "Please enter the value";
-                            }else {
+                            } else {
                               return null;
                             }
                           },
@@ -389,7 +437,8 @@ class AddGoodsStates extends State<AddGoods> {
                       new Flexible(
                         child: new TextFormField(
                           decoration: InputDecoration(
-                              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               filled: true,
                               fillColor: Colors.white,
                               hintText: "Enter Docket No",
@@ -420,19 +469,20 @@ class AddGoodsStates extends State<AddGoods> {
                       new Flexible(
                         child: DropdownButtonFormField<Vendor>(
                           decoration: InputDecoration(
-                              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              contentPadding:
+                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               filled: true,
                               fillColor: Colors.white,
                               hintText: "Select Vendor",
                               labelText: 'Vendor',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
-                          ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0))),
                           value: selectedVenderId,
 //                          onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
                           isDense: true,
                           items: this.vendorList.map((Vendor data) {
                             return DropdownMenuItem<Vendor>(
-                              child:  Text(data.VendorName),
+                              child: Text(data.VendorName),
                               value: data,
                             );
                           }).toList(),
@@ -445,7 +495,7 @@ class AddGoodsStates extends State<AddGoods> {
                           validator: (Vendor value) {
                             if (selectedVenderId.VendorId == null) {
                               return "Please select vendor";
-                            }else {
+                            } else {
                               return null;
                             }
                           },
@@ -500,7 +550,7 @@ class AddGoodsStates extends State<AddGoods> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Flexible(
-                        child:  DropdownButtonFormField<Category>(
+                        child: DropdownButtonFormField<Category>(
 //                          onSaved: (val) => goodsForm.CatId = val.CatId.toString(),
                           onChanged: (Category value) {
                             onLoadSubCategory();
@@ -534,11 +584,11 @@ class AddGoodsStates extends State<AddGoods> {
                         width: 5.0,
                       ),
                       new Flexible(
-                        child:  DropdownButtonFormField<SubCategory>(
+                        child: DropdownButtonFormField<SubCategory>(
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                               filled: true,
+                              filled: true,
                               fillColor: Colors.white,
                               labelText: 'Sub Category',
                               hintText: "Select Sub Category",
@@ -638,7 +688,7 @@ class AddGoodsStates extends State<AddGoods> {
                         child: new TextFormField(
                           decoration: InputDecoration(
                               contentPadding:
-                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                               filled: true,
                               fillColor: Colors.white,
                               labelText: 'Color',
@@ -658,7 +708,7 @@ class AddGoodsStates extends State<AddGoods> {
                         child: new TextFormField(
                           decoration: InputDecoration(
                             contentPadding:
-                            EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             filled: true,
                             fillColor: Colors.white,
                             labelText: 'Size',
@@ -667,6 +717,7 @@ class AddGoodsStates extends State<AddGoods> {
                                 borderRadius: BorderRadius.circular(10.0)),
                           ),
 //                          autofocus: true,
+                          keyboardType: TextInputType.number,
                           onSaved: (val) => goodsForm.Size = val,
 //                          inputFormatters: [
 //                            WhitelistingTextInputFormatter.digitsOnly
@@ -697,6 +748,7 @@ class AddGoodsStates extends State<AddGoods> {
                                   borderRadius: BorderRadius.circular(10.0))),
 //                          autofocus: true,
                           onSaved: (val) => goodsForm.CostPerPrice = val,
+                          keyboardType: TextInputType.number,
                           validator: (dynamic value) {
                             if (value.isEmpty) {
                               return "Please enter cost price";
@@ -722,6 +774,7 @@ class AddGoodsStates extends State<AddGoods> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0))),
                           onSaved: (val) => goodsForm.RetailPrice = val,
+                          keyboardType: TextInputType.number,
 //                          autofocus: true,
                           validator: (dynamic value) {
                             if (value.isEmpty) {
@@ -754,6 +807,7 @@ class AddGoodsStates extends State<AddGoods> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0))),
                           onSaved: (val) => goodsForm.Quantity = val,
+                          keyboardType: TextInputType.number,
 //                          inputFormatters: [
 //                            WhitelistingTextInputFormatter.digitsOnly
 //                          ],
@@ -791,22 +845,50 @@ class AddGoodsStates extends State<AddGoods> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      // new Flexible(
+                      //   child: new TextFormField(
+                      //     decoration: InputDecoration(
+                      //         contentPadding:
+                      //             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      //         filled: true,
+                      //         fillColor: Colors.white,
+                      //         labelText: 'Season',
+                      //         hintText: "Enter Season",
+                      //         border: OutlineInputBorder(
+                      //             borderRadius: BorderRadius.circular(10.0))),
+                      //     onSaved: (val) => goodsForm.Season = val,
+                      //     // decoration: InputDecoration(
+                      //     //     contentPadding: EdgeInsets.all(10))
+                      //   ),
+                      // ),
+
                       new Flexible(
-                        child: new TextFormField(
-                          decoration: InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: 'Season',
-                              hintText: "Enter Season",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0))),
-                          onSaved: (val) => goodsForm.Season = val,
-                          // decoration: InputDecoration(
-                          //     contentPadding: EdgeInsets.all(10))
-                        ),
+                      child: DropdownButtonFormField<Season>(
+                        onChanged: (Season value) {
+                          setState(() {
+                            goodsForm.Season = value.Id.toString();
+                            selectedSeasonId = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            contentPadding:
+                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                            filled: true,
+                            fillColor: Colors.white,
+                            labelText: "Season",
+                            hintText: "Select Season",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0))),
+                        value: selectedSeasonId,
+                        isDense: true,
+                        items: this.seasonList.map((Season data) {
+                          return DropdownMenuItem<Season>(
+                            child: new Text(data.SeasonName),
+                            value: data,
+                          );
+                        }).toList(),
                       ),
+                    ),
                       SizedBox(
                         width: 5.0,
                       ),
@@ -1008,7 +1090,7 @@ class AddGoodsStates extends State<AddGoods> {
                           decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                                filled: true,
+                              filled: true,
                               fillColor: Colors.white,
                               labelText: 'Barcode',
                               hintText: "Barcode",
@@ -1037,10 +1119,11 @@ class AddGoodsStates extends State<AddGoods> {
                         child: MaterialButton(
                           minWidth: MediaQuery.of(context).size.width,
                           padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                          onPressed: ()=> {
-                            if(_formKey.currentState.validate()){
-                              onSubmit(),
-                            }
+                          onPressed: () => {
+                            if (_formKey.currentState.validate())
+                              {
+                                onSubmit(),
+                              }
                           },
                           child: Text("Submit",
                               textAlign: TextAlign.center,

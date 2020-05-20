@@ -152,6 +152,36 @@ Map<String, dynamic> _$SubCategorylistToJson(SubCategorylist instance) =>
       'subcatData': instance.subcatData,
     };
 
+Season _$SeasonFromJson(Map<String, dynamic> json) {
+  return Season(
+    Id: json['Id'] as int,
+    SeasonName: json['SeasonName'] as String,
+    CreatedOn: json['CreatedOn'] as String,
+    Status: json['Status'] as bool,
+  );
+}
+
+Map<String, dynamic> _$SeasonToJson(Season instance) => <String, dynamic>{
+      'Id': instance.Id,
+      'SeasonName': instance.SeasonName,
+      'CreatedOn': instance.CreatedOn,
+      'Status': instance.Status,
+    };
+
+SeasonList _$SeasonListFromJson(Map<String, dynamic> json) {
+  return SeasonList(
+    seasonData: (json['seasonData'] as List)
+        ?.map((e) =>
+            e == null ? null : Season.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$SeasonListToJson(SeasonList instance) =>
+    <String, dynamic>{
+      'seasonData': instance.seasonData,
+    };
+
 GoodsFormModelResultInstance _$GoodsFormModelResultInstanceFromJson(
     Map<String, dynamic> json) {
   return GoodsFormModelResultInstance(

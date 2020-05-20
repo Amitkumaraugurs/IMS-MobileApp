@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.15.7
   http: ^0.12.1
   validators: ^2.0.0
+  oktoast: ^2.1.8
   #image_picker_modern: ^0.4.12+2
 
 

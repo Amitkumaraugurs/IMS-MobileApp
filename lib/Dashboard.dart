@@ -5,6 +5,8 @@ import 'package:management/UI/InventoryRequest.dart';
 import 'package:management/UI/IssuetoStore.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'Stock/StockList.dart';
+
 
 
 class Dashboard extends StatefulWidget{
@@ -54,7 +56,7 @@ class DashboardState extends State<Dashboard>{
                        children: <Widget>[
                          GestureDetector(
                              onTap: () {print("onTap Goods.");
-                             Navigator.push(context, MaterialPageRoute(builder: (context) => AddGoodMain()));
+                             Navigator.push(context, MaterialPageRoute(builder: (context) => StockList()));
                              },
                              child: Image(
                                height: 55,
@@ -94,7 +96,7 @@ class DashboardState extends State<Dashboard>{
                          SizedBox(
                            height: 10.0,
                          ),
-                         Text("Issue to Store",style: style,textAlign: TextAlign.center,
+                         Text("Store Transfers",style: style,textAlign: TextAlign.center,
                          )
                        ],
                      ),
@@ -173,24 +175,27 @@ class DashboardState extends State<Dashboard>{
 
                    ),
                    Container(
-                     padding: EdgeInsets.all(20.0),
+                     padding: EdgeInsets.all(15.0),
                      width: 120.0,
                      color: Colors.brown,
                      child: Column(
 
                        children: <Widget>[
                          GestureDetector(
-                             onTap: () {print("onTap Goods.");},
+                             onTap: () {
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => AddGoodMain()));
+                               print("onTap Goods.");
+                               },
                              child: Image(
-                               height: 55,
+                               height: 50,
                                fit:BoxFit.fill,
-                               image: AssetImage("assets/addgoods.png"),
+                               image: AssetImage("assets/doc.png"),
                              )
                          ),
                          SizedBox(
                            height: 10.0,
                          ),
-                         Text("Good In",style: style
+                         Text("Purchase Entry",style: style,textAlign: TextAlign.center
                          )
                        ],
                      ),

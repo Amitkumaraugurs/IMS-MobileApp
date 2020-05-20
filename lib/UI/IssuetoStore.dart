@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:management/network/api_service.dart';
 import 'package:management/network/model/goods_model.dart';
@@ -67,8 +68,13 @@ class IssuetoStoreState extends State<IssuetoStore>{
             new FlatButton(
               child: new Text("Done"),
               onPressed: () {
+                doketController.clear();
+                transpostController.clear();
+                articleController.clear();
+                barcodeController.clear();
+                qytController.clear();
                 Navigator.of(context).pop();
-
+                //SystemNavigator.pop();
               },
             ),
           ],
@@ -232,8 +238,8 @@ class IssuetoStoreState extends State<IssuetoStore>{
             EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             filled: true,
             fillColor: Colors.white,
-            labelText: 'Transport',
-            hintText: "Transport",
+            labelText: 'Reference',
+            hintText: "Reference",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0))),
         // onSaved: (val) => transport = val,

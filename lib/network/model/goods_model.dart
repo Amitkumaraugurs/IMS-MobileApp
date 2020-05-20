@@ -13,12 +13,12 @@ class PurchaseListData {
 
   PurchaseListData(
       {this.BarCode,
-      this.ItemDesc,
-      this.Qty,
-      this.StockBal,
-      this.DateStock,
-      this.Offer,
-      this.SaleQty});
+        this.ItemDesc,
+        this.Qty,
+        this.StockBal,
+        this.DateStock,
+        this.Offer,
+        this.SaleQty});
 
   factory PurchaseListData.fromJson(Map<String, dynamic> json) => _$PurchaseListDataFromJson(json);
   Map<String, dynamic> toJson() => _$PurchaseListDataToJson(this);
@@ -26,15 +26,22 @@ class PurchaseListData {
 
 @JsonSerializable()
 class Purchaselist {
+
   List<PurchaseListData> purchasedata;
 
   Purchaselist({this.purchasedata});
 
   factory Purchaselist.fromJson(Map<String, dynamic> parsedJson) {
+    print(parsedJson);
+    // print(parsedJson.isNotEmpty);
+    // if(parsedJson.isNotEmpty){
     var list = parsedJson['Table'] as List;
-    List<PurchaseListData> purchaseList =
-        list.map((i) => PurchaseListData.fromJson(i)).toList();
+    // print(list);
+    List<PurchaseListData> purchaseList =list.map((i) => PurchaseListData.fromJson(i)).toList();
     return Purchaselist(purchasedata: purchaseList);
+    // }else{
+    //   return Parser.;
+    // }
   }
 }
 
@@ -124,23 +131,49 @@ class SubCategory {
 
   SubCategory({this.SubId, this.SubName, this.CatId});
 
-  factory SubCategory.fromJson(Map<String, dynamic> json) =>
-      _$SubCategoryFromJson(json);
-
+  factory SubCategory.fromJson(Map<String, dynamic> json) => _$SubCategoryFromJson(json);
   Map<String, dynamic> toJson() => _$SubCategoryToJson(this);
+
 }
 
 @JsonSerializable()
 class SubCategorylist {
-  List<SubCategory> subcatData;
 
+  List<SubCategory> subcatData;
   SubCategorylist({this.subcatData});
 
   factory SubCategorylist.fromJson(Map<String, dynamic> parsedJson) {
     var list = parsedJson['Table'] as List;
     List<SubCategory> subcatList =
-        list.map((i) => SubCategory.fromJson(i)).toList();
+    list.map((i) => SubCategory.fromJson(i)).toList();
     return SubCategorylist(subcatData: subcatList);
+  }
+}
+
+@JsonSerializable()
+class Season {
+  int Id;
+  String SeasonName;
+  String CreatedOn;
+  bool Status;
+
+  Season({this.Id,this.SeasonName,this.CreatedOn,this.Status});
+
+  factory Season.fromJson(Map<String, dynamic> json) =>_$SeasonFromJson(json);
+  Map<String, dynamic>toJson()=>_$SeasonToJson(this);
+}
+
+@JsonSerializable()
+class SeasonList {
+
+  List<Season> seasonData;
+  SeasonList({this.seasonData});
+
+  factory SeasonList.fromJson(Map<String, dynamic> parsedJson){
+    var list = parsedJson['Table'] as List;
+    print(list);
+    List<Season> seasonlist = list.map((i)=> Season.fromJson(i)).toList();
+    return SeasonList(seasonData :seasonlist);
   }
 }
 
@@ -151,17 +184,16 @@ class SubCategorylist {
 //  String GroupId = "";
 //  String SubGruopId = "";
 //  String Barcode = "";
-//
-//  String Concept; String ItemDesc;String StyleNo;
-//
+//  String Concept;
+//  String ItemDesc;
+//  String StyleNo;
 //  String Color = "";
 //  String Size = "";
 //  String CostPerPrice = "";
 //  String RetailPrice = "";
 //  String Quantity = "";
-//
-//  String SaleQuantity;String StockBal;
-//
+//  String SaleQuantity;
+//  String StockBal;
 //  String DateStock = "";
 //  String Season = "";
 //  String Margin = "";
@@ -169,34 +201,31 @@ class SubCategorylist {
 //  String SAT = "";
 //  String Offer = "";
 //  String BrandStyleCode = "";
-//
 //  String StoreId;
-//
 //  String Transport = "";
 //  String DocketNo = "";
-//
-//  String StockLife;String OutTransport; String OutDockectNo;
-//
+//  String StockLife;
+//  String OutTransport;
+//  String OutDockectNo;
 //  String Artical = "";
 //  String Action = "";
-//
+
 //  GoodsFormModel({
 //    this.VendorId,
 //    this.CatId,
 //    this.GroupId,
 //    this.SubGruopId,
 //    this.Barcode,
-//
-//    this.Concept, this.ItemDesc, this.StyleNo,
-//
+//    this.Concept,
+//    this.ItemDesc,
+//    this.StyleNo,
 //    this.Color,
 //    this.Size,
 //    this.CostPerPrice,
 //    this.RetailPrice,
 //    this.Quantity,
-//
-//    this.SaleQuantity, this.StockBal,
-//
+//    this.SaleQuantity,
+//    this.StockBal,
 //    this.DateStock,
 //    this.Season,
 //    this.Margin,
@@ -204,18 +233,13 @@ class SubCategorylist {
 //    this.SAT,
 //    this.Offer,
 //    this.BrandStyleCode,
-//
 //    this.StoreId,
-//
 //    this.Transport,
 //    this.DocketNo,
-//
 //    this.StockLife, this.OutTransport, this.OutDockectNo,
-//
 //    this.Artical,
 //    this.Action
 //  });
-//
 //  factory GoodsFormModel.fromJson(Map<String, dynamic> json) => _$GoodsFormModelFromJson(json);
 //  Map<String, dynamic> toJson() => _$GoodsFormModelToJson(this);
 //}
@@ -250,8 +274,7 @@ class GoodsFormModelResponse {
 //    return parsedJson['Response'];
     var list = parsedJson['Response'] as List;
     List<GoodsFormModelResultInstance> res =
-        list.map((i) => GoodsFormModelResultInstance.fromJson(i)).toList();
-    print(res);
+    list.map((i) => GoodsFormModelResultInstance.fromJson(i)).toList();
     return GoodsFormModelResponse(responseData: res);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:management/network/api_service.dart';
 import 'package:management/network/model/goods_model.dart';
+import 'package:management/network/model/request_inventory.dart';
 import 'package:management/network/model/store.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +20,28 @@ class InventoryRequestState extends State<InventoryRequest>{
   ProgressDialog pr;
   List<Store> vendorList = <Store>[];
   Store selectedVenderId;
-  String storeid;
+  String storeid="0";
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+
+
+  List<RequestListData> RequestList = <RequestListData>[];
+
+  Future<List> loadRequestItemList() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.Getdistribution(0, storeid, 0,0,0,0,0,0,"","","",0,"","",0,6).then((result) {
+      print(result.RequestData);
+      if (result.RequestData.isNotEmpty) {
+        setState(() {
+          RequestList = result.RequestData;
+        });
+      }else{
+        RequestList = [];
+      }
+      print(RequestList);
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
 
   Future<List> loadStore() async {
@@ -56,7 +77,7 @@ class InventoryRequestState extends State<InventoryRequest>{
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-
+        onPressed:() => this.loadRequestItemList(),
         child: Text("GO",
             textAlign: TextAlign.center,
             style: style.copyWith(
@@ -71,8 +92,7 @@ class InventoryRequestState extends State<InventoryRequest>{
       appBar: AppBar(
         title: Text("Inventory Requests"),
       ),
-    body: SingleChildScrollView(
-      child: Container(
+    body: Container(
         margin: const EdgeInsets.all(20.0),
     child: Column(
     children: <Widget>[
@@ -103,7 +123,7 @@ class InventoryRequestState extends State<InventoryRequest>{
           },
         ),
       SizedBox(
-        height: 15.0,
+        height: 10.0,
       ),
 
 
@@ -129,7 +149,7 @@ class InventoryRequestState extends State<InventoryRequest>{
         //     contentPadding: EdgeInsets.all(10))
       ),
       SizedBox(
-        height: 15.0,
+        height: 10.0,
       ),
       new TextFormField(
         decoration: InputDecoration(
@@ -153,14 +173,84 @@ class InventoryRequestState extends State<InventoryRequest>{
         //     contentPadding: EdgeInsets.all(10))
       ),
       SizedBox(
-        height: 15.0,
+        height: 10.0,
       ),
 
       loginButon,
+      SizedBox(
+        height: 10.0,
+      ),
+      new Container(
+          child: RequestList.isNotEmpty
+              ? Expanded(child: ListView.builder(
+            itemCount: RequestList.length,
+            itemBuilder: _buildRow,
+          ),
+          )
+              : Container(
+          )
+      )
 
     ])
       )
-     )
+
+    );
+  }
+  Widget _buildRow(BuildContext context, int index) {
+    return Card(
+      child: Row(
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.all(7.0),
+//            FontWeight : const  bold = w700,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
+                  Container(
+                      child: Text("Item : ",
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                  ),
+                  Container(
+                      child: Text("Barcode : ",
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                  ),
+                  Container(
+                      child: Text("Issued Qty : ",
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                  ),
+                  Container(
+                      child: Text("Status : ",
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                  ),
+                ]
+            ),
+          ),
+
+          Container(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
+                  Container(
+                    child: Text(RequestList[index].ItemDesc != null ? RequestList[index].ItemDesc :''),
+                  ),
+                  Container(
+                    child: Text(RequestList[index].Barcode != null ? RequestList[index].Barcode :''),
+                  ),
+                  Container(
+                    child: Text(RequestList[index].StoreName != null ? RequestList[index].StoreName :''),
+                  ),
+                  Container(
+                    child: Text(RequestList[index].Status != null ? RequestList[index].Status :''),
+                  ),
+                ]
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

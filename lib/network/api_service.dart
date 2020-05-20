@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:management/network/model/inventoryConf.dart';
 //import 'package:management/network/model/user.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'model/goods_model.dart';
+import 'model/request_inventory.dart';
+import 'model/stock_model.dart';
 import 'model/store.dart';
 import 'model/task_model.dart';
 import 'package:intl/intl.dart';
@@ -72,6 +75,13 @@ abstract class ApiService {
       @Field("MaxQty") MaxQty,
       @Field("Action") Action,
       @Field("SubCatCode") SubCatCode);
+
+  @POST("/StockEntry/GetSeason")
+  Future<SeasonList> getSeasonList(
+      @Field("ID") ID,
+      @Field("Name") Name,
+      @Field("Action") Action);
+
 
   @POST("/StockEntry/SavePurchaseEntry")
   Future<String> submitGoodsFormData(@Field("ID") ID,
@@ -164,6 +174,91 @@ abstract class ApiService {
       @Field("Docket") Docket,
       @Field("StockLife") StockLife,
       @Field("Action") Action);
+
+
+
+  @POST("/StockEntry/GetArticle")
+  Future<Stocklist>getStockList(
+      @Field("ID") ID,
+      @Field("CatId") CatId,
+      @Field("GroupId") GroupId,
+      @Field("SubGroupId") SubGroupId,
+      @Field("Artical") Artical,
+      @Field("ItemDesc") ItemDesc,
+      @Field("StyleNo") StyleNo,
+      @Field("Colour") Colour,
+      @Field("Size") Size,
+      @Field("CostPerPrice") CostPerPrice,
+      @Field("RetailPrice") RetailPrice,
+      @Field("Margin") Margin,
+      @Field("VAT") VAT,
+      @Field("SAT") SAT,
+      @Field("Discount") Discount,
+      @Field("BrandStyleCode") BrandStyleCode,
+      @Field("Season") Season,
+      @Field("Barcode") Barcode,
+      @Field("Quantity") Quantity,
+      @Field("Action") Action,
+      );
+
+  @POST("/StockEntry/SaveArticleEntry")
+  Future<String>submitStockFormData(
+      @Field("ID") ID,
+      @Field("CatId") CatId,
+      @Field("GroupId") GroupId,
+      @Field("SubGroupId") SubGroupId,
+      @Field("Article") Article,
+      @Field("ItemDesc") ItemDesc,
+      @Field("StyleNo") StyleNo,
+      @Field("Colour") Colour,
+      @Field("Size") Size,
+      @Field("CostPerPrice") CostPerPrice,
+      @Field("RetailPrice") RetailPrice,
+      @Field("Margin") Margin,
+      @Field("VAT") VAT,
+      @Field("SAT") SAT,
+      @Field("Discount") Discount,
+      @Field("BrandStyleCode") BrandStyleCode,
+      @Field("Season") Season,
+      @Field("Barcode") Barcode,
+      @Field("Quantity") Quantity,
+      @Field("Action") Action,
+      );
+
+
+  @POST("/InventoryIssueToStore/GetTransfer")
+  Future<Inventorylist>Gettransfer(
+      @Field("ID") ID,
+      @Field("Action") Action,
+      @Field("FromStore") FromStore,
+      @Field("ToStore") ToStore,
+      @Field("PurchaseId") PurchaseId,
+      @Field("Barcode") Barcode,
+      @Field("Quantity") Quantity,
+      @Field("IssuedQty") IssuedQty,
+      );
+
+
+  @POST("/InventoryIssueToStore/GetDistribution")
+  Future<Requestlist>Getdistribution(
+      @Field("ID") ID,
+      @Field("StoreId") StoreId,
+      @Field("PurchaseId") PurchaseId,
+      @Field("IssueQty") IssueQty,
+      @Field("SoldQty") SoldQty,
+      @Field("DamageQty") DamageQty,
+      @Field("ReturnQty") ReturnQty,
+      @Field("Discount") Discount,
+      @Field("Barcode") Barcode,
+      @Field("From") From,
+      @Field("To") To,
+      @Field("MasterQty") MasterQty,
+      @Field("Transport") Transport,
+      @Field("Docket") Docket,
+      @Field("StockLife") StockLife,
+      @Field("Action") Action,
+      );
+
 }
 
 
