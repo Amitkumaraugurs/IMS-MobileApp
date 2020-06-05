@@ -3,6 +3,7 @@ import 'package:management/network/model/inventoryConf.dart';
 //import 'package:management/network/model/user.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
+import 'model/company.dart';
 import 'model/goods_model.dart';
 import 'model/request_inventory.dart';
 import 'model/stock_model.dart';
@@ -155,6 +156,15 @@ abstract class ApiService {
 
   @POST("/InventoryIssueToStore/GetStore")
   Future<Storelist> getStoreList(@Field("Action") Action);
+
+  @POST("/login/getcompanyinformation")
+  Future<Companylist> getCompanyList(@Field("Action") Action);
+
+  @POST("/login/getusertype")
+  Future<Usertypelist> getusertypeList(@Field("Action") Action);
+
+  @POST("/login/getusernames")
+  Future<UserNamelist> getusernameList(@Field("userscope") userscope);
 
   @POST("/InventoryIssueToStore/SaveDistribution")
   Future<String> SaveDistribution(

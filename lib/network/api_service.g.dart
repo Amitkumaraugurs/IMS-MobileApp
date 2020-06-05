@@ -456,6 +456,63 @@ class _ApiService implements ApiService {
   }
 
   @override
+  getCompanyList(Action) async {
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'Action': Action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getcompanyinformation',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Companylist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getusertypeList(Action) async {
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'Action': Action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getusertype',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Usertypelist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getusernameList(userscope) async {
+    ArgumentError.checkNotNull(userscope, 'userscope');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'userscope': userscope};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getusernames',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = UserNamelist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   SaveDistribution(
       ID,
       StoreId,

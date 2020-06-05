@@ -1,14 +1,18 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:management/Dashboard.dart';
 import 'package:management/UI/forgotpassword.dart';
+import 'package:management/network/model/company.dart';
 import 'package:management/network/model/user.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'network/api_service.dart';
+import 'network/model/company.dart';
+import 'network/model/company.dart';
+import 'network/model/company.dart';
+import 'network/model/company.dart';
 
 
 class Login extends StatefulWidget{
@@ -26,6 +30,71 @@ class LoginState extends State<Login>{
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordFieldController = new TextEditingController();
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  List<Company> complanyList = <Company>[];
+  Company selectedCompanyId;
+  String complanyid;
+
+  List<Usertype> UsertypeList = <Usertype>[];
+  Usertype usertype;
+  String Usertypeid;
+
+  List<UserName> UsertypenameList = <UserName>[];
+  UserName usernametype;
+  String Usertypenameid;
+
+  Future<List> loadCompany() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getCompanyList(1).then((result) {
+      if(result.companydata.isNotEmpty ){
+        this.complanyList = result.companydata;
+        setState(() {
+          selectedCompanyId = result.companydata[0];
+          complanyid = result.companydata[0].companyid.toString();
+        });
+      }
+    }).catchError((error) {
+      print(error);
+    });
+  }
+
+  Future<List> loadUsertype() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getusertypeList(1).then((result) {
+      if(result.usertypedata.isNotEmpty ){
+        this.UsertypeList = result.usertypedata;
+        setState(() {
+          usertype = result.usertypedata[0];
+          Usertypeid = result.usertypedata[0].UserScope.toString();
+        });
+      }
+    }).catchError((error) {
+      print(error);
+    });
+  }
+
+  Future<List> loadUsertnameype() async {
+    final api = Provider.of<ApiService>(context, listen: false);
+    await api.getusernameList(Usertypeid).then((result) {
+      if(result.usernamedata.isNotEmpty ){
+        this.UsertypenameList = result.usernamedata;
+        setState(() {
+          usernametype = result.usernamedata[0];
+          Usertypenameid = result.usernamedata[0].UserId.toString();
+        });
+      }
+    }).catchError((error) {
+      print(error);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    this.loadCompany();
+    this.loadUsertype();
+   // this.loadUsertnameype();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -98,11 +167,11 @@ class LoginState extends State<Login>{
          // Navigator.pushReplacement(context, route);
 
 
-          var username=emailController.text.trim();
+         // var username=emailController.text.trim();
           var password=passwordFieldController.text.trim();
-          print(username.length);
+          print(Usertypenameid.length);
           print(password);
-          if(username.isEmpty){
+          if(Usertypenameid.isEmpty){
             showLongToast("Enter User Id");
           }else if(password.isEmpty){
             showLongToast("Enter Password");
@@ -123,7 +192,7 @@ class LoginState extends State<Login>{
             );
             pr.show();
             final api = Provider.of<ApiService>(context, listen: false);
-            api.getloginTask(username,password,0).then((it) {
+            api.getloginTask(Usertypenameid,password,0).then((it) {
            // Map<String, dynamic> user = jsonDecode(it);
            // var userMap = json.decode(it);
            // Userlist userList = Userlist.fromJson(userMap);
@@ -167,15 +236,92 @@ class LoginState extends State<Login>{
                     mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         SizedBox(
-                          height: 165.0,
+                          height: 150.0,
                           child: Image.asset(
                             "assets/erlogo.png",
                             fit: BoxFit.contain,
                           ),
                         ),
-                        SizedBox(height: 40.0),
-                        emailField,
-                        SizedBox(height: 15.0),
+                        SizedBox(height: 20.0),
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "Select Company",
+                              labelText: 'Company',
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
+                          ),
+
+                          value: selectedCompanyId,
+                          // onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
+                          isDense: true,
+                          items: this.complanyList.map((Company data) {
+                            return DropdownMenuItem<Company>(
+                              child:  Text(data.companyname),
+                              value: data,
+                            );
+                          }).toList(),
+                          onChanged: (Company value) {
+                            setState(() {
+                              complanyid = value.companyid.toString();
+                            });
+                          },
+                        ),
+                        SizedBox(height: 10.0),
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "Select User",
+                              labelText: 'User Type',
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
+                          ),
+
+                          value: usertype,
+                          // onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
+                          isDense: true,
+                          items: this.UsertypeList.map((Usertype data) {
+                            return DropdownMenuItem<Usertype>(
+                              child:  Text(data.UserScope),
+                              value: data,
+                            );
+                          }).toList(),
+                          onChanged: (Usertype value) {
+                            setState(() {
+                              Usertypeid = value.UserScope.toString();
+                              this.loadUsertnameype();
+                            });
+                          },
+                        ),
+                        SizedBox(height: 10.0),
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "User Name",
+                              labelText: 'User Name',
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
+                          ),
+
+                          value: usernametype,
+                          // onSaved: (value) => goodsForm.VendorId = value.VendorId.toString(),
+                          isDense: true,
+                          items: this.UsertypenameList.map((UserName data) {
+                            return DropdownMenuItem<UserName>(
+                              child:  Text(data.UserId),
+                              value: data,
+                            );
+                          }).toList(),
+                          onChanged: (UserName value) {
+                            setState(() {
+                              Usertypenameid = value.UserId.toString();
+                            });
+                          },
+                        ),
+                        SizedBox(height: 10.0),
                         passwordField,
                         SizedBox(
                           height: 25.0,

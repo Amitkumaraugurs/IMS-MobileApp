@@ -28,4 +28,6 @@ class Storelist {
     List<Store> vendorList = list.map((i) => Store.fromJson(i)).toList();
     return Storelist(storedata: vendorList);
   }
+
+
 }
