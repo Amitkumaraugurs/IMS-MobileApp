@@ -338,6 +338,7 @@ class DashboardState extends State<Dashboard> {
                           ),
                           Text("Vendor Balance", style: style)
                         ],
+
                       ),
                     ),
                   ],
