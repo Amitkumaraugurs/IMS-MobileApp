@@ -1,21 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:management/network/api_service.dart';
 import 'package:management/network/model/goods_model.dart';
 import 'package:provider/provider.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 // import 'package:flutter/scheduler.dart';
-
+// import 'package:oktoast/oktoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 class AddStockItem extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return AddStockItemState();
-    throw UnimplementedError();
   }
 }
 
@@ -27,19 +25,17 @@ class StockFormObject {
   String ItemDesc;
   String StyleNo;
   String Color = "";
-//  String Size = "";
-//  List<StockFormObject> Size;
   List Size = [];
   String CostPerPrice = "";
   String RetailPrice = "";
   String Margin = "";
   String VAT = "";
-//  String SAT = "";
   String Discount = "";
   String BrandStyleCode = "";
   String Season = "";
   String Barcode = "";
   String Action = "";
+  String RFID = "";
 
   StockFormObject(
       {this.CatId,
@@ -54,37 +50,38 @@ class StockFormObject {
       this.RetailPrice,
       this.Margin,
       this.VAT,
-//      this.SAT,
       this.Discount,
       this.BrandStyleCode,
       this.Season,
       this.Barcode,
-      this.Action});
+      this.Action,
+      this.RFID});
 }
 
 class AddStockItemState extends State<AddStockItem> {
-
+  ProgressDialog pr;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   StockFormObject stockForm = new StockFormObject();
 
-  List SizeDataList = [];
-
-  List QuantityDataList = [];
-
   List<Vendor> vendorList = <Vendor>[];
+
   Vendor selectedVenderId;
 
   List<Season> seasonList = <Season>[];
+  
   Season selectedSeasonId;
 
   List<Group> groupList = <Group>[];
+
   Group selectedGroupId;
 
   List<Category> categoryList = <Category>[];
+
   Category selectedCatId;
 
   List<SubCategory> subcatList = <SubCategory>[];
+
   SubCategory selectedSubCat;
 
   bool isBarcode = false;
@@ -95,19 +92,16 @@ class AddStockItemState extends State<AddStockItem> {
 
   Future<List> loadVendor() async {
     final api = Provider.of<ApiService>(context, listen: false);
-    await api
+    return await api
         .getVendorList(0, 0, "", "", "", "", 0, 0, "", "", 7)
         .then((result) {
-      print(result.vendordata);
       if (result.vendordata.isNotEmpty) {
         this.vendorList = result.vendordata;
-        print(this.vendorList);
         setState(() {
           selectedVenderId = result.vendordata[0];
           stockForm.BrandStyleCode = result.vendordata[0].VendorId.toString();
         });
       }
-//      this.vendorList = data.vendordata;
     }).catchError((error) {
       print(error);
     });
@@ -115,17 +109,14 @@ class AddStockItemState extends State<AddStockItem> {
 
   Future<List> loadSeason() async {
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getSeasonList(0, "", 6).then((result) {
-      print(result.seasonData);
+    return await api.getSeasonList(0, "", 6).then((result) {
       if (result.seasonData.isNotEmpty) {
         this.seasonList = result.seasonData;
-        print(this.seasonList);
         setState(() {
           selectedSeasonId = result.seasonData[0];
           stockForm.Season = result.seasonData[0].Id.toString();
         });
       }
-//      this.vendorList = data.vendordata;
     }).catchError((error) {
       print(error);
     });
@@ -133,8 +124,7 @@ class AddStockItemState extends State<AddStockItem> {
 
   Future<List> loadGroup() async {
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getGroupList(0, "", 0, 4).then((result) {
-      print(result.groupData);
+    return await api.getGroupList(0, "", 0, 4).then((result) {
       selectedGroupId = result.groupData[0];
       if (result.groupData.isNotEmpty) {
         setState(() {
@@ -150,15 +140,17 @@ class AddStockItemState extends State<AddStockItem> {
   }
 
   Future<List> onLoadCategory() async {
+    this.categoryList = [];
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getCategoryList(0, "", selectedGroupId.GroupId, 4).then((result) {
+    return await api
+        .getCategoryList(0, "", selectedGroupId.GroupId, 4)
+        .then((result) {
       if (result.catData.isNotEmpty) {
-//        selectedCatId = result.catData[0];
         setState(() {
+          this.categoryList = result.catData;
           selectedCatId = result.catData[0];
           stockForm.CatId = result.catData[0].CatId.toString();
         });
-        this.categoryList = result.catData;
         this.onLoadSubCategory();
       }
     }).catchError((error) {
@@ -169,33 +161,37 @@ class AddStockItemState extends State<AddStockItem> {
   Future<List> onLoadSubCategory() async {
     this.subcatList = [];
     final api = Provider.of<ApiService>(context, listen: false);
-    await api
+    return await api
         .getSubCategoryList(0, "", 0, selectedCatId.CatId, 0, 0, 7, "")
         .then((result) {
       if (result.subcatData.isNotEmpty) {
         selectedSubCat = result.subcatData[0];
         setState(() {
+          this.subcatList = result.subcatData;
           selectedSubCat = result.subcatData[0];
           stockForm.SubGruopId = result.subcatData[0].SubId.toString();
         });
-        this.subcatList = result.subcatData;
       }
     }).catchError((error) {
       print(error);
     });
   }
 
-  Future<String> onSubmit() async{
-    print("submit");
+  Future<String> onSubmit() async {
     try {
       _formKey.currentState.save();
       _formKey.currentState.validate();
+
       var quantity = [];
       var size = [];
-      dynamicTextField.forEach((widget) => size.addAll({widget.controllerSize.text}));
-      dynamicTextField.forEach((widget) => quantity.addAll({widget.controllerQty.text}));
-      String quant = quantity.join(', ');
-      String newSize = size.join(', ');
+
+      dynamicTextField
+          .forEach((widget) => size.addAll({widget.controllerSize.text}));
+      dynamicTextField
+          .forEach((widget) => quantity.addAll({widget.controllerQty.text}));
+
+      String quant = quantity.join(',');
+      String newSize = size.join(',');
 
       if (_formKey.currentState.validate() == true) {
         var costPerPrice = stockForm.CostPerPrice.isNotEmpty
@@ -210,11 +206,27 @@ class AddStockItemState extends State<AddStockItem> {
         var vat = stockForm.VAT.isNotEmpty
             ? double.parse(stockForm.VAT).toStringAsFixed(2)
             : "";
-//        var sat = stockForm.SAT.isNotEmpty
-//            ? double.parse(stockForm.SAT).toStringAsFixed(2)
-//            : "";
+        pr = new ProgressDialog(context,
+            type: ProgressDialogType.Normal,
+            isDismissible: false,
+            showLogs: true);
+        pr.style(
+            message: 'processing...',
+            borderRadius: 10.0,
+            backgroundColor: Colors.white,
+            progressWidget: CircularProgressIndicator(),
+            elevation: 10.0,
+            insetAnimCurve: Curves.easeInOut,
+            progress: 0.0,
+            maxProgress: 100.0,
+            messageTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w600));
+        pr.show();
         final api = Provider.of<ApiService>(context, listen: false);
-        await api.submitStockFormData(
+        await api
+            .submitStockFormData(
                 0,
                 selectedCatId.CatId,
                 selectedGroupId.GroupId,
@@ -234,20 +246,22 @@ class AddStockItemState extends State<AddStockItem> {
                 stockForm.Season,
                 stockForm.Barcode,
                 quant,
+                stockForm.RFID,
                 0)
             .then((result) {
           var res = jsonDecode(result);
           if (res[0]['Status'] == true && res[0]['Message'] == "Success") {
-            print("dddd");
             this.loadVendor();
             this.loadSeason();
             this.loadGroup();
             dynamicTextField.forEach((widget) => widget.controllerSize.clear());
             dynamicTextField.forEach((widget) => widget.controllerQty.clear());
             _formKey.currentState.reset();
+            pr.hide().then((isHidden) {
+              print(isHidden);
+            });
 
             // showToast('Data Saved Successfully.');
-
             // Fluttertoast.showToast(msg: "Data Saved Successfully.");
 
             // Fluttertoast.showToast(
@@ -265,13 +279,15 @@ class AddStockItemState extends State<AddStockItem> {
             //textColor: Colors.white,
             //      fontSize: 16.0
             //  );
-          // } else {
-          //   showToast('Some error occured.');
+            // } else {
+            //   showToast('Some error occured.');
           }
         });
       }
     } catch (error) {
-      print("error");
+      pr.hide().then((isHidden) {
+        print(isHidden);
+      });
       print(error);
 //      Fluttertoast.showToast(
 //          msg: error,
@@ -284,15 +300,31 @@ class AddStockItemState extends State<AddStockItem> {
     }
   }
 
-  Future<dynamic> onReset() {
+  onReset() {
     _formKey.currentState.reset();
+
+    setState(() {
+      selectedGroupId = null;
+      selectedCatId = null;
+      selectedSubCat = null;
+      selectedVenderId = null;
+      selectedSeasonId = null;
+
+      selectedGroupId = this.groupList[0];
+      selectedCatId = this.categoryList[0];
+      selectedSubCat = this.subcatList[0];
+      selectedVenderId = this.vendorList[0];
+      selectedSeasonId = this.seasonList[0];
+    });
   }
 
   addDynamicTextField() {
-    if (dynamicTextField.length > 1) {
+    if (dynamicTextField.length > 0) {
       isButtonRemoveDisabled = false;
     }
+
     dynamicTextField.add(new AddDynamicText());
+    print(dynamicTextField);
   }
 
   removeDynamicTextField() {
@@ -301,30 +333,6 @@ class AddStockItemState extends State<AddStockItem> {
       isButtonRemoveDisabled = true;
     }
   }
-
-  // Start for date
-
-  final TextEditingController _controller = new TextEditingController();
-
-  Future _chooseDate(BuildContext context, String initialDateString) async {
-    var now = new DateTime.now();
-    var initialDate = convertToDate(initialDateString) ?? now;
-    initialDate = (initialDate.year >= 1900 && initialDate.isBefore(now)
-        ? initialDate
-        : now);
-    var currentYear = now.year;
-    var result = await showDatePicker(
-        context: context,
-        initialDate: initialDate,
-        firstDate: new DateTime(currentYear - 1),
-        lastDate: new DateTime(currentYear + 20));
-    if (result == null) return;
-    setState(() {
-      _controller.text = new DateFormat.yMd().format(result);
-    });
-  }
-
-  //end for date
 
   DateTime convertToDate(String input) {
     try {
@@ -345,7 +353,7 @@ class AddStockItemState extends State<AddStockItem> {
     //  SchedulerBinding.instance.addPostFrameCallback((_) {
     //   Navigator.of(context).pushNamed("StockList");
     // });
-//    myFocusNode = FocusNode();
+    // myFocusNode = FocusNode();
   }
 
   @override
@@ -357,8 +365,7 @@ class AddStockItemState extends State<AddStockItem> {
 
   @override
   Widget build(BuildContext context) {
-    final halfMediaWidth = MediaQuery.of(context).size.width / 2.0;
-    // TODO: implement build
+    // final halfMediaWidth = MediaQuery.of(context).size.width / 2.0;
     TextStyle style = TextStyle(
         fontFamily: 'Montserrat', fontSize: 15.0, color: Colors.white);
     return Scaffold(
@@ -366,8 +373,6 @@ class AddStockItemState extends State<AddStockItem> {
         title: Text("Add Stock Items"),
       ),
       body: SingleChildScrollView(
-//      body: Container(
-//        child: Container(
         child: Form(
           key: _formKey,
           child: Column(
@@ -426,16 +431,9 @@ class AddStockItemState extends State<AddStockItem> {
                     new Flexible(
                       child: DropdownButtonFormField<Category>(
 //                          onSaved: (val) => stockForm.CatId = val.CatId.toString(),
-                        onChanged: (Category value) {
-                          onLoadSubCategory();
-                          setState(() {
-                            stockForm.CatId = value.CatId.toString();
-                            selectedCatId = value;
-                          });
-                        },
                         validator: (Category value) {
                           if (selectedCatId.CatId == null) {
-                            return "Please select category";
+                            return "Please select Category";
                           }
                           return null;
                         },
@@ -448,7 +446,6 @@ class AddStockItemState extends State<AddStockItem> {
                             hintText: "Select Category",
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0))),
-
                         value: selectedCatId,
                         isDense: true,
                         items: this.categoryList.map((Category data) {
@@ -457,6 +454,13 @@ class AddStockItemState extends State<AddStockItem> {
                             value: data,
                           );
                         }).toList(),
+                        onChanged: (Category value) {
+                          setState(() {
+                            stockForm.CatId = value.CatId.toString();
+                            selectedCatId = value;
+                          });
+                          onLoadSubCategory();
+                        },
                       ),
                     ),
                   ],
@@ -481,7 +485,7 @@ class AddStockItemState extends State<AddStockItem> {
                                 borderRadius: BorderRadius.circular(10.0))),
                         validator: (SubCategory value) {
                           if (selectedSubCat.SubId == null) {
-                            return "Please select sub category";
+                            return "Please select sub Category";
                           }
                           return null;
                         },
@@ -625,12 +629,12 @@ class AddStockItemState extends State<AddStockItem> {
                         ),
 //                          autofocus: true,
                         onSaved: (val) => stockForm.StyleNo = val,
-                        validator: (dynamic value) {
-                          if (value.isEmpty) {
-                            return "Please enter style no";
-                          }
-                          return null;
-                        },
+                        // validator: (dynamic value) {
+                        //   if (value.isEmpty) {
+                        //     return "Please enter style no";
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     ),
                     SizedBox(
@@ -727,26 +731,17 @@ class AddStockItemState extends State<AddStockItem> {
                                 borderRadius: BorderRadius.circular(10.0))),
                         onSaved: (val) => stockForm.VAT = val,
                         keyboardType: TextInputType.number,
+                        validator: (dynamic value) {
+                          if (value.isEmpty) {
+                            return "Please enter GST";
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(
                       width: 5.0,
                     ),
-//                      new Flexible(
-//                        child: new TextFormField(
-//                          decoration: InputDecoration(
-//                              contentPadding:
-//                                  EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//                              filled: true,
-//                              fillColor: Colors.white,
-//                              labelText: 'Sat',
-//                              hintText: "Enter Sat",
-//                              border: OutlineInputBorder(
-//                                  borderRadius: BorderRadius.circular(10.0))),
-//                          onSaved: (val) => stockForm.SAT = val,
-//                        ),
-//                      ),
-
                     new Flexible(
                       child: new TextFormField(
                         decoration: InputDecoration(
@@ -760,6 +755,12 @@ class AddStockItemState extends State<AddStockItem> {
                                 borderRadius: BorderRadius.circular(10.0))),
                         onSaved: (val) => stockForm.Discount = val,
                         keyboardType: TextInputType.number,
+                        validator: (dynamic value) {
+                          if (value.isEmpty) {
+                            return "Please enter Discount";
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ],
@@ -785,6 +786,12 @@ class AddStockItemState extends State<AddStockItem> {
                         ),
                         onSaved: (val) => stockForm.Margin = val,
                         keyboardType: TextInputType.number,
+                        validator: (dynamic value) {
+                          if (value.isEmpty) {
+                            return "Pleases enter Margin";
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(
@@ -798,11 +805,11 @@ class AddStockItemState extends State<AddStockItem> {
                           filled: true,
                           fillColor: Colors.white,
                           labelText: 'RFID',
-                          hintText: "Enter RFID (In %)",
+                          hintText: "Enter RFID",
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0)),
                         ),
-//                          onSaved: (val) => stockForm.Margin = val,
+                        onSaved: (val) => stockForm.RFID = val,
                       ),
                     ),
                   ],
@@ -826,15 +833,12 @@ class AddStockItemState extends State<AddStockItem> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0))),
                         onSaved: (val) => stockForm.ItemDesc = val,
-                        validator: (dynamic value) {
-                          if (value.isEmpty) {
-                            return "Please enter item description";
-                          }
-                          return null;
-                        },
-//                          autofocus: true,
-                        // decoration: InputDecoration(
-                        //     contentPadding: EdgeInsets.all(10))
+                        // validator: (dynamic value) {
+                        //   if (value.isEmpty) {
+                        //     return "Please enter item description";
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     ),
                   ],
@@ -879,125 +883,44 @@ class AddStockItemState extends State<AddStockItem> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0))),
                         onSaved: (val) => stockForm.Barcode = val,
-//                           decoration: InputDecoration(
-//                               contentPadding: EdgeInsets.all(10))
                       ),
                     ),
                   ],
                 ),
               ),
-//                Container(
-//                  margin: const EdgeInsets.all(10.0),
-//                  child: Row(
-//                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                    crossAxisAlignment: CrossAxisAlignment.start,
-//                    children: <Widget>[
-//                      new Flexible(
-//                        child: new TextFormField(
-//                          decoration: InputDecoration(
-//                            contentPadding:
-//                            EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//                            filled: true,
-//                            fillColor: Colors.white,
-//                            labelText: 'Size',
-//                            hintText: "Enter Size",
-//                            border: OutlineInputBorder(
-//                                borderRadius: BorderRadius.circular(10.0)),
-//                          ),
-////                          autofocus: true,
-//                          onSaved: (val) => stockForm.Size = val,
-////                          inputFormatters: [
-////                            WhitelistingTextInputFormatter.digitsOnly
-////                          ],
-//                          // decoration: InputDecoration(
-//                          //     contentPadding: EdgeInsets.all(10))
-//                        ),
-//                      ),
-//                      SizedBox(
-//                        width: 5.0,
-//                      ),
-//                      new Flexible(
-//                        child: new TextFormField(
-//                          decoration: InputDecoration(
-//                              contentPadding:
-//                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//                              filled: true,
-//                              fillColor: Colors.white,
-//                              labelText: 'Quantity',
-//                              hintText: "Enter Quantity",
-//                              border: OutlineInputBorder(
-//                                  borderRadius: BorderRadius.circular(10.0))),
-//                          onSaved: (val) => stockForm.Quantity = val,
-////                          inputFormatters: [
-////                            WhitelistingTextInputFormatter.digitsOnly
-////                          ],
-//                          // decoration: InputDecoration(
-//                          //     contentPadding: EdgeInsets.all(10))
-//                        ),
-//                      ),
-//                      SizedBox(
-//                        width: 5.0,
-//                      ),
-//                      new Flexible(
-//                        child: Icon(
-//                          Icons.add,
-//                          color: Colors.deepOrange,
-//                          size: 24.0,
-//                          semanticLabel: 'Text to announce in accessibility modes'
-//                      ),
-//                    ],
-//                  ),
-//                ),
-//                Container(
-//                    margin: const EdgeInsets.all(10.0),
-//                    child: Row(
-//                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                      crossAxisAlignment: CrossAxisAlignment.start,
-//                    )
-//                ),
               Container(
                 margin: const EdgeInsets.all(10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    // new Expanded(
                     new Flexible(
                       child: new ListView.builder(
                           primary: false,
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          // physics: NeverScrollableScrollPhysics(),
                           itemCount: dynamicTextField.length,
-                          itemBuilder: (_, int index) =>
-                              dynamicTextField[index]),
+                          itemBuilder: (_, index) => dynamicTextField[index]),
                     ),
 //                      ),
                     SizedBox(
                       width: 5.0,
                     ),
                     new IconButton(
-//                        icon: Icon(Icons.remove_circle),
                       color: Colors.deepOrange,
-                      icon: Icon(Icons.add_circle,
-                          color: Colors.deepOrange,
-//                            size: 24.0,
-                          semanticLabel:
-                              'Text to announce in accessibility modes'),
+                      icon: Icon(Icons.add_circle, color: Colors.deepOrange),
                       onPressed: addDynamicTextField,
                     ),
-//                      if(dynamicTextField.length > 1){
                     SizedBox(
                       width: 5.0,
                     ),
                     new IconButton(
-//                        icon: Icon(Icons.remove_circle),
                       color: Colors.deepOrange,
                       icon: Icon(Icons.remove_circle,
                           color: isButtonRemoveDisabled == false
                               ? Colors.deepOrange
-                              : Colors.grey,
-//                            size: 24.0,
-                          semanticLabel:
-                              'Text to announce in accessibility modes'),
+                              : Colors.grey),
                       onPressed: isButtonRemoveDisabled == false
                           ? removeDynamicTextField
                           : null,
@@ -1065,22 +988,25 @@ class AddStockItemState extends State<AddStockItem> {
 }
 
 class AddDynamicText extends StatelessWidget {
+  
   TextEditingController controllerQty = new TextEditingController();
   TextEditingController controllerSize = new TextEditingController();
 
-  @override
   StockFormObject stockForm = new StockFormObject();
-
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return ListTile(
+      title: Row(
+        // margin: const EdgeInsets.all(10.0),
+        // child: Row(
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           new Flexible(
             child: new TextFormField(
               controller: controllerSize,
+              textInputAction: TextInputAction.go,
+              // autofocus: true,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                 filled: true,
@@ -1099,6 +1025,8 @@ class AddDynamicText extends StatelessWidget {
             child: new TextFormField(
               controller: controllerQty,
               keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.go,
+              //  autofocus: true,
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   filled: true,
@@ -1110,6 +1038,7 @@ class AddDynamicText extends StatelessWidget {
             ),
           ),
         ],
+        // ),
       ),
     );
   }

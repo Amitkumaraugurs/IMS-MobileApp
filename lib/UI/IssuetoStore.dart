@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:management/network/api_service.dart';
-import 'package:management/network/model/goods_model.dart';
 import 'package:management/network/model/store.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,6 @@ import 'package:provider/provider.dart';
 class IssuetoStore extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return IssuetoStoreState();
   }
 
@@ -33,7 +31,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
 
   Future<List> loadStore() async {
     final api = Provider.of<ApiService>(context, listen: false);
-    await api.getStoreList(7).then((result) {
+    return await api.getStoreList(7).then((result) {
       if(result.storedata.isNotEmpty ){
         this.vendorList = result.storedata;
         setState(() {
@@ -99,7 +97,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () async{
 
-          var username=storeid;
+          // var username=storeid;
           print(storeid);
           var docketnumber=doketController.text;
           var transpost=transpostController.text;
@@ -156,10 +154,7 @@ class IssuetoStoreState extends State<IssuetoStore>{
       ),
     );
 
-
-
     return Scaffold(
-
       appBar: AppBar(
         title: Text("Inventory Issue to Store"),
       ),

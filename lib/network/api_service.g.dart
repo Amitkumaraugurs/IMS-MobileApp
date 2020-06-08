@@ -60,6 +60,63 @@ class _ApiService implements ApiService {
   }
 
   @override
+  getCompanyList(Action) async {
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'Action': Action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getcompanyinformation',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Companylist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getusertypeList(Action) async {
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'Action': Action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getusertype',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Usertypelist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getusernameList(userscope) async {
+    ArgumentError.checkNotNull(userscope, 'userscope');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'userscope': userscope};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/login/getusernames',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = UserNamelist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
   getVendorList(ID, StoreID, VendorCode, Name, Address, Tin, City, State,
       Contact, Remarks, Action) async {
     ArgumentError.checkNotNull(ID, 'ID');
@@ -437,6 +494,167 @@ class _ApiService implements ApiService {
   }
 
   @override
+  getStockList(
+      ID,
+      CatId,
+      GroupId,
+      SubGroupId,
+      Artical,
+      ItemDesc,
+      StyleNo,
+      Color,
+      Size,
+      CostPerPrice,
+      RetailPrice,
+      Margin,
+      VAT,
+      SAT,
+      Discount,
+      BrandStyleCode,
+      Season,
+      Barcode,
+      Quantity,
+      Action) async {
+    ArgumentError.checkNotNull(ID, 'ID');
+    ArgumentError.checkNotNull(CatId, 'CatId');
+    ArgumentError.checkNotNull(GroupId, 'GroupId');
+    ArgumentError.checkNotNull(SubGroupId, 'SubGroupId');
+    ArgumentError.checkNotNull(Artical, 'Artical');
+    ArgumentError.checkNotNull(ItemDesc, 'ItemDesc');
+    ArgumentError.checkNotNull(StyleNo, 'StyleNo');
+    ArgumentError.checkNotNull(Color, 'Color');
+    ArgumentError.checkNotNull(Size, 'Size');
+    ArgumentError.checkNotNull(CostPerPrice, 'CostPerPrice');
+    ArgumentError.checkNotNull(RetailPrice, 'RetailPrice');
+    ArgumentError.checkNotNull(Margin, 'Margin');
+    ArgumentError.checkNotNull(VAT, 'VAT');
+    ArgumentError.checkNotNull(SAT, 'SAT');
+    ArgumentError.checkNotNull(Discount, 'Discount');
+    ArgumentError.checkNotNull(BrandStyleCode, 'BrandStyleCode');
+    ArgumentError.checkNotNull(Season, 'Season');
+    ArgumentError.checkNotNull(Barcode, 'Barcode');
+    ArgumentError.checkNotNull(Quantity, 'Quantity');
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'ID': ID,
+      'CatId': CatId,
+      'GroupId': GroupId,
+      'SubGroupId': SubGroupId,
+      'Artical': Artical,
+      'ItemDesc': ItemDesc,
+      'StyleNo': StyleNo,
+      'Color': Color,
+      'Size': Size,
+      'CostPerPrice': CostPerPrice,
+      'RetailPrice': RetailPrice,
+      'Margin': Margin,
+      'VAT': VAT,
+      'SAT': SAT,
+      'Discount': Discount,
+      'BrandStyleCode': BrandStyleCode,
+      'Season': Season,
+      'Barcode': Barcode,
+      'Quantity': Quantity,
+      'Action': Action
+    };
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/StockEntry/GetArticle',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Stocklist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  submitStockFormData(
+      ID,
+      CatId,
+      GroupId,
+      SubGroupId,
+      Article,
+      ItemDesc,
+      StyleNo,
+      Color,
+      Size,
+      CostPerPrice,
+      RetailPrice,
+      Margin,
+      VAT,
+      SAT,
+      Discount,
+      BrandStyleCode,
+      Season,
+      Barcode,
+      Quantity,
+      RFID,
+      Action) async {
+    ArgumentError.checkNotNull(ID, 'ID');
+    ArgumentError.checkNotNull(CatId, 'CatId');
+    ArgumentError.checkNotNull(GroupId, 'GroupId');
+    ArgumentError.checkNotNull(SubGroupId, 'SubGroupId');
+    ArgumentError.checkNotNull(Article, 'Article');
+    ArgumentError.checkNotNull(ItemDesc, 'ItemDesc');
+    ArgumentError.checkNotNull(StyleNo, 'StyleNo');
+    ArgumentError.checkNotNull(Color, 'Color');
+    ArgumentError.checkNotNull(Size, 'Size');
+    ArgumentError.checkNotNull(CostPerPrice, 'CostPerPrice');
+    ArgumentError.checkNotNull(RetailPrice, 'RetailPrice');
+    ArgumentError.checkNotNull(Margin, 'Margin');
+    ArgumentError.checkNotNull(VAT, 'VAT');
+    ArgumentError.checkNotNull(SAT, 'SAT');
+    ArgumentError.checkNotNull(Discount, 'Discount');
+    ArgumentError.checkNotNull(BrandStyleCode, 'BrandStyleCode');
+    ArgumentError.checkNotNull(Season, 'Season');
+    ArgumentError.checkNotNull(Barcode, 'Barcode');
+    ArgumentError.checkNotNull(Quantity, 'Quantity');
+    ArgumentError.checkNotNull(RFID, 'RFID');
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'ID': ID,
+      'CatId': CatId,
+      'GroupId': GroupId,
+      'SubGroupId': SubGroupId,
+      'Article': Article,
+      'ItemDesc': ItemDesc,
+      'StyleNo': StyleNo,
+      'Color': Color,
+      'Size': Size,
+      'CostPerPrice': CostPerPrice,
+      'RetailPrice': RetailPrice,
+      'Margin': Margin,
+      'VAT': VAT,
+      'SAT': SAT,
+      'Discount': Discount,
+      'BrandStyleCode': BrandStyleCode,
+      'Season': Season,
+      'Barcode': Barcode,
+      'Quantity': Quantity,
+      'RFID': RFID,
+      'Action': Action
+    };
+    final Response<String> _result = await _dio.request(
+        '/StockEntry/SaveArticleEntry',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
   getStoreList(Action) async {
     ArgumentError.checkNotNull(Action, 'Action');
     const _extra = <String, dynamic>{};
@@ -452,63 +670,6 @@ class _ApiService implements ApiService {
             baseUrl: baseUrl),
         data: _data);
     final value = Storelist.fromJson(_result.data);
-    return Future.value(value);
-  }
-
-  @override
-  getCompanyList(Action) async {
-    ArgumentError.checkNotNull(Action, 'Action');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = {'Action': Action};
-    final Response<Map<String, dynamic>> _result = await _dio.request(
-        '/login/getcompanyinformation',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = Companylist.fromJson(_result.data);
-    return Future.value(value);
-  }
-
-  @override
-  getusertypeList(Action) async {
-    ArgumentError.checkNotNull(Action, 'Action');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = {'Action': Action};
-    final Response<Map<String, dynamic>> _result = await _dio.request(
-        '/login/getusertype',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = Usertypelist.fromJson(_result.data);
-    return Future.value(value);
-  }
-
-  @override
-  getusernameList(userscope) async {
-    ArgumentError.checkNotNull(userscope, 'userscope');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = {'userscope': userscope};
-    final Response<Map<String, dynamic>> _result = await _dio.request(
-        '/login/getusernames',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = UserNamelist.fromJson(_result.data);
     return Future.value(value);
   }
 
@@ -568,164 +729,6 @@ class _ApiService implements ApiService {
     };
     final Response<String> _result = await _dio.request(
         '/InventoryIssueToStore/SaveDistribution',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  getStockList(
-      ID,
-      CatId,
-      GroupId,
-      SubGroupId,
-      Artical,
-      ItemDesc,
-      StyleNo,
-      Colour,
-      Size,
-      CostPerPrice,
-      RetailPrice,
-      Margin,
-      VAT,
-      SAT,
-      Discount,
-      BrandStyleCode,
-      Season,
-      Barcode,
-      Quantity,
-      Action) async {
-    ArgumentError.checkNotNull(ID, 'ID');
-    ArgumentError.checkNotNull(CatId, 'CatId');
-    ArgumentError.checkNotNull(GroupId, 'GroupId');
-    ArgumentError.checkNotNull(SubGroupId, 'SubGroupId');
-    ArgumentError.checkNotNull(Artical, 'Artical');
-    ArgumentError.checkNotNull(ItemDesc, 'ItemDesc');
-    ArgumentError.checkNotNull(StyleNo, 'StyleNo');
-    ArgumentError.checkNotNull(Colour, 'Colour');
-    ArgumentError.checkNotNull(Size, 'Size');
-    ArgumentError.checkNotNull(CostPerPrice, 'CostPerPrice');
-    ArgumentError.checkNotNull(RetailPrice, 'RetailPrice');
-    ArgumentError.checkNotNull(Margin, 'Margin');
-    ArgumentError.checkNotNull(VAT, 'VAT');
-    ArgumentError.checkNotNull(SAT, 'SAT');
-    ArgumentError.checkNotNull(Discount, 'Discount');
-    ArgumentError.checkNotNull(BrandStyleCode, 'BrandStyleCode');
-    ArgumentError.checkNotNull(Season, 'Season');
-    ArgumentError.checkNotNull(Barcode, 'Barcode');
-    ArgumentError.checkNotNull(Quantity, 'Quantity');
-    ArgumentError.checkNotNull(Action, 'Action');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = {
-      'ID': ID,
-      'CatId': CatId,
-      'GroupId': GroupId,
-      'SubGroupId': SubGroupId,
-      'Artical': Artical,
-      'ItemDesc': ItemDesc,
-      'StyleNo': StyleNo,
-      'Colour': Colour,
-      'Size': Size,
-      'CostPerPrice': CostPerPrice,
-      'RetailPrice': RetailPrice,
-      'Margin': Margin,
-      'VAT': VAT,
-      'SAT': SAT,
-      'Discount': Discount,
-      'BrandStyleCode': BrandStyleCode,
-      'Season': Season,
-      'Barcode': Barcode,
-      'Quantity': Quantity,
-      'Action': Action
-    };
-    final Response<Map<String, dynamic>> _result = await _dio.request(
-        '/StockEntry/GetArticle',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = Stocklist.fromJson(_result.data);
-    return Future.value(value);
-  }
-
-  @override
-  submitStockFormData(
-      ID,
-      CatId,
-      GroupId,
-      SubGroupId,
-      Article,
-      ItemDesc,
-      StyleNo,
-      Colour,
-      Size,
-      CostPerPrice,
-      RetailPrice,
-      Margin,
-      VAT,
-      SAT,
-      Discount,
-      BrandStyleCode,
-      Season,
-      Barcode,
-      Quantity,
-      Action) async {
-    ArgumentError.checkNotNull(ID, 'ID');
-    ArgumentError.checkNotNull(CatId, 'CatId');
-    ArgumentError.checkNotNull(GroupId, 'GroupId');
-    ArgumentError.checkNotNull(SubGroupId, 'SubGroupId');
-    ArgumentError.checkNotNull(Article, 'Article');
-    ArgumentError.checkNotNull(ItemDesc, 'ItemDesc');
-    ArgumentError.checkNotNull(StyleNo, 'StyleNo');
-    ArgumentError.checkNotNull(Colour, 'Colour');
-    ArgumentError.checkNotNull(Size, 'Size');
-    ArgumentError.checkNotNull(CostPerPrice, 'CostPerPrice');
-    ArgumentError.checkNotNull(RetailPrice, 'RetailPrice');
-    ArgumentError.checkNotNull(Margin, 'Margin');
-    ArgumentError.checkNotNull(VAT, 'VAT');
-    ArgumentError.checkNotNull(SAT, 'SAT');
-    ArgumentError.checkNotNull(Discount, 'Discount');
-    ArgumentError.checkNotNull(BrandStyleCode, 'BrandStyleCode');
-    ArgumentError.checkNotNull(Season, 'Season');
-    ArgumentError.checkNotNull(Barcode, 'Barcode');
-    ArgumentError.checkNotNull(Quantity, 'Quantity');
-    ArgumentError.checkNotNull(Action, 'Action');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = {
-      'ID': ID,
-      'CatId': CatId,
-      'GroupId': GroupId,
-      'SubGroupId': SubGroupId,
-      'Article': Article,
-      'ItemDesc': ItemDesc,
-      'StyleNo': StyleNo,
-      'Colour': Colour,
-      'Size': Size,
-      'CostPerPrice': CostPerPrice,
-      'RetailPrice': RetailPrice,
-      'Margin': Margin,
-      'VAT': VAT,
-      'SAT': SAT,
-      'Discount': Discount,
-      'BrandStyleCode': BrandStyleCode,
-      'Season': Season,
-      'Barcode': Barcode,
-      'Quantity': Quantity,
-      'Action': Action
-    };
-    final Response<String> _result = await _dio.request(
-        '/StockEntry/SaveArticleEntry',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -837,6 +840,148 @@ class _ApiService implements ApiService {
             baseUrl: baseUrl),
         data: _data);
     final value = Requestlist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getBalVendorList(ID, StoreID, VendorCode, Name, Address, Tin, City, State,
+      Contact, Remarks, Action) async {
+    ArgumentError.checkNotNull(ID, 'ID');
+    ArgumentError.checkNotNull(StoreID, 'StoreID');
+    ArgumentError.checkNotNull(VendorCode, 'VendorCode');
+    ArgumentError.checkNotNull(Name, 'Name');
+    ArgumentError.checkNotNull(Address, 'Address');
+    ArgumentError.checkNotNull(Tin, 'Tin');
+    ArgumentError.checkNotNull(City, 'City');
+    ArgumentError.checkNotNull(State, 'State');
+    ArgumentError.checkNotNull(Contact, 'Contact');
+    ArgumentError.checkNotNull(Remarks, 'Remarks');
+    ArgumentError.checkNotNull(Action, 'Action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'ID': ID,
+      'StoreID': StoreID,
+      'VendorCode': VendorCode,
+      'Name': Name,
+      'Address': Address,
+      'Tin': Tin,
+      'City': City,
+      'State': State,
+      'Contact': Contact,
+      'Remarks': Remarks,
+      'Action': Action
+    };
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/vendorbalance/GetVendor',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = BalanceVendorlist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  getVendorBalanceList(id, storeid, action) async {
+    ArgumentError.checkNotNull(id, 'id');
+    ArgumentError.checkNotNull(storeid, 'storeid');
+    ArgumentError.checkNotNull(action, 'action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'id': id, 'storeid': storeid, 'action': action};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/vendorbalance/getBalance',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = VendorSearchBalList.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  updateVendorBalance(balance, vendorId, invoice, action) async {
+    ArgumentError.checkNotNull(balance, 'balance');
+    ArgumentError.checkNotNull(vendorId, 'vendorId');
+    ArgumentError.checkNotNull(invoice, 'invoice');
+    ArgumentError.checkNotNull(action, 'action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'balance': balance,
+      'vendorId': vendorId,
+      'InvNo': invoice,
+      'action': action
+    };
+    final Response<String> _result = await _dio.request(
+        '/vendorbalance/updateVendorBalance',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  getStoreStockList(id, name, address, contact, tin, action) async {
+    ArgumentError.checkNotNull(id, 'id');
+    ArgumentError.checkNotNull(name, 'name');
+    ArgumentError.checkNotNull(address, 'address');
+    ArgumentError.checkNotNull(contact, 'contact');
+    ArgumentError.checkNotNull(tin, 'tin');
+    ArgumentError.checkNotNull(action, 'action');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'ID': id,
+      'Name': name,
+      'Address': address,
+      'Contact': contact,
+      'Tin': tin,
+      'Action': action
+    };
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/StoreStockBalance/GetStore',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = StoreStocklist.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  searchStoreStock(storeId, fromdate, todate) async {
+    ArgumentError.checkNotNull(storeId, 'storeId');
+    ArgumentError.checkNotNull(fromdate, 'fromdate');
+    ArgumentError.checkNotNull(todate, 'todate');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {'StoreId': storeId, 'fromdate': fromdate, 'todate': todate};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/StoreStockBalance/BindData',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = StoreStockBalList.fromJson(_result.data);
     return Future.value(value);
   }
 }
